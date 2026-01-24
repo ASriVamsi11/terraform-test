@@ -33,6 +33,14 @@ jobs:
               working-directory: ${{ env.TF_DIR }}
               run: terraform init
 
+            - name: Terraform Plan
+              working-directory: ${{ env.TF_DIR }}
+              run: |
+                terraform plan \
+                -var="aws_region=${AWS_REGION}" \
+                -var="project_name=${PROJECT_NAME}" \
+                -var="image_tag=${IMAGE_TAG}"
+
             - name: Terraform Apply
               working-directory: ${{ env.TF_DIR }}
               run: terraform apply -auto-approve -var="aws_region=${AWS_REGION}" -var="project_name=${PROJECT_NAME}" -var="image_tag=latest"
@@ -64,7 +72,7 @@ jobs:
                     -var = "project_name=${PROJECT_NAME}" \
                     -var = "image_tag=${IMAGE_TAG}"
 
-            - name: SHow alb URL
+            - name: Show alb URL
               working-directory: ${{ env.TF_DIR }}
               run: |
                 echo "ALB: http://$(terraform output -raw alb_dns_name)"
