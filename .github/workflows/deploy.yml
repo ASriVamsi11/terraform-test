@@ -1,0 +1,70 @@
+name: Deploy FastAPI to ECS (Terraform)
+
+on:
+    push:
+        branches: ["main"]
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        env:
+            AWS_REGION: us-east-1
+            PROJECT_NAME: fastapi-hello
+            TF_DIR: terraform
+        
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region: ${{ env.AWS_REGION }}
+
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v2
+              with:
+                terraform_version: 1.7.5
+
+            - name: Terraform Init
+              working-directory: ${{ env.TF_DIR }}
+              run: terraform init
+
+            - name: Terraform Apply
+              working-directory: ${{ env.TF_DIR }}
+              run: terraform apply -auto-approve -var="aws_region=${AWS_REGION}" -var="project_name=${PROJECT_NAME}" -var="image_tag=latest"
+
+            - name: Read ECR repo URL
+              id: tfout
+              working-directory: ${{ env.TF_DIR }}
+              run: |
+                echo "ECR_URL=$(terraform output -raw ecr_repository_url)" >> $GITHUB_OUTPUT
+
+            - name: Login to Amazon ECR
+              uses: aws-actions/amazon-ecr-login@v2
+
+            - name: Build and Push Docker image
+              env:
+                ECR_URL: ${{ steps.tfout.output.ECR_URL }}
+                IMAGE_TAG: ${{ github.sha }}
+              run: |
+                docker build -t "$ECR_URL:$IMAGE_TAG" ./app
+                docker push "$ECR_URL:$IMAGE_TAG"
+
+            - name: Terraform apply
+              working-directory: ${{ env.TF_DIR }}
+              env:
+                IMAGE_TAG: ${{ github.sha }}
+              run: |
+                terraform apply -auto-approve \
+                    -var = "aws_region=${AWS_REGION}" \
+                    -var = "project_name=${PROJECT_NAME}" \
+                    -var = "image_tag=${IMAGE_TAG}"
+
+            - name: SHow alb URL
+              working-directory: ${{ env.TF_DIR }}
+              run: |
+                echo "ALB: http://$(terraform output -raw alb_dns_name)"
