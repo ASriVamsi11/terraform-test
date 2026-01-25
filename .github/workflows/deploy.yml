@@ -57,7 +57,7 @@ jobs:
 
             - name: Build and Push Docker image
               env:
-                ECR_URL: ${{ steps.tfout.output.ECR_URL }}
+                ECR_URL: ${{ steps.tfout.outputs.ECR_URL }}
                 IMAGE_TAG: ${{ github.sha }}
               run: |
                 docker build -t "$ECR_URL:${{github.sha}}" ./app
