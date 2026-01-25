@@ -16,6 +16,9 @@ The CI/CD pipeline builds a Docker image, pushes it to **Amazon ECR**, and updat
 
 ## 🏗 Architecture
 
+![AWS Architecture](docs/architecture.png)
+
+---
 ```mermaid
 flowchart TB
   User[User Browser] --> ALB[Application Load Balancer]
@@ -35,10 +38,6 @@ flowchart TB
   GHA --> ECR
   GHA --> ECS
 ```
----
-
-![AWS Architecture](docs/architecture.png)
-
 ---
 
 ## 📁 Folder Structure
