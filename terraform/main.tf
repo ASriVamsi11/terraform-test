@@ -52,6 +52,7 @@ resource "aws_route_table_association" "public_b" {
 
 resource "aws_ecr_repository" "app" {
     name = "${var.project_name}-repo"
+    force_delete = true
 }
 
 resource "aws_cloudwatch_log_group" "app" {
