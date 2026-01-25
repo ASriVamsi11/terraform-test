@@ -39,7 +39,6 @@ flowchart TB
 
 ## 📁 Folder Structure
 
-```
 .
 ├── app/                      # FastAPI application
 │   ├── main.py
@@ -57,10 +56,9 @@ flowchart TB
 │   ├── outputs.tf
 │   └── providers.tf
 │
-└── .github/workflows/
-    └── deploy.yml            # Manual CI/CD workflow
+└── .github/workflows/        # Manual CI/CD workflow
+    └── deploy.yml
 
-```
 ---
 
 ## 🧰 Tech Stack
