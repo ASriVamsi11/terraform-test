@@ -56,13 +56,19 @@ jobs:
               working-directory: ${{ env.TF_DIR }}
               shell: bash
               run: |
-                ECR_URL="$(terraform output -raw ecr_repository_url | head -n 1 | tr -d '\r' | sed 's/^\[command\]//')"
-                echo "ECR_URL=$ECR_URL" >> "$GITHUB_ENV"
-                echo "Resolved ECR_URL=$ECR_URL"
-                if [[ "$ECR_URL" != *.amazonaws.com/* ]]; then
-                  echo "Bad ECR_URL: $ECR_URL"
+                set -euo pipefail
+
+                RAW="$(terraform output -raw ecr_repository_url)"
+                ECR_URL="${RAW//$'\r'/}"
+                ECR_URL="${ECR_URL#\[command\]}"
+
+                if [ -z "$ECR_URL" ]; then
+                  echo "ECR_URL is empty. RAW was: $RAW"
                   exit 1
                 fi
+
+                echo "ECR_URL=$ECR_URL" >> "$GITHUB_ENV"
+                echo "Resolved ECR_URL=$ECR_URL"
 
             - name: Login to Amazon ECR
               uses: aws-actions/amazon-ecr-login@v2
