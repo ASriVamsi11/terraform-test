@@ -16,7 +16,7 @@ variable "image_tag" {
     default = "latest"
 
     validation {
-    condition     = length(trim(var.image_tag)) > 0
+    condition     = length(trimspace(var.image_tag)) > 0
     error_message = "image_tag cannot be empty"
     }
 }
