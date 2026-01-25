@@ -39,7 +39,8 @@ flowchart TB
 
 ## 📁 Folder Structure
 
-.
+```text
+
 ├── app/                      # FastAPI application
 │   ├── main.py
 │   ├── requirements.txt
@@ -59,6 +60,7 @@ flowchart TB
 └── .github/workflows/        # Manual CI/CD workflow
     └── deploy.yml
 
+```
 ---
 
 ## 🧰 Tech Stack
