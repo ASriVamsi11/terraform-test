@@ -18,25 +18,23 @@ The CI/CD pipeline builds a Docker image, pushes it to **Amazon ECR**, and updat
 
 ```mermaid
 flowchart TB
-User[(User / Browser)] -->|HTTP| ALB[Application Load Balancer]
+  User[User Browser] --> ALB[Application Load Balancer]
 
-subgraph AWS[AWS Account]
-  subgraph VPC[VPC]
-    ALB --> TG[Target Group]
-    TG --> ECS[ECS Fargate Service<br/>FastAPI Container]
-    ECS --> CW[CloudWatch Logs]
-    ECS --> ECR[Elastic Container Registry]
+  subgraph AWS[AWS Account]
+    subgraph VPC[VPC]
+      ALB --> TG[Target Group]
+      TG --> ECS[ECS Fargate Service]
+      ECS --> CW[CloudWatch Logs]
+      ECS --> ECR[Amazon ECR Repository]
+    end
   end
-end
 
-Dev[Developer] -->|Run workflow| GHA[GitHub Actions]
-GHA --> TF[Terraform]
-TF --> S3[Terraform State (S3)]
-GHA --> ECR
-GHA --> ECS
-
+  Dev[Developer] --> GHA[GitHub Actions]
+  GHA --> TF[Terraform]
+  TF --> STATE[Terraform State in S3]
+  GHA --> ECR
+  GHA --> ECS
 ```
-
 ---
 
 ## 📁 Folder Structure
