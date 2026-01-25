@@ -70,7 +70,7 @@ jobs:
                 terraform apply -auto-approve \
                     -var = "aws_region=${AWS_REGION}" \
                     -var = "project_name=${PROJECT_NAME}" \
-                    -var = "image_tag=${IMAGE_TAG}"
+                    -var = "image_tag=${{github.sha}}"
 
             - name: Show alb URL
               working-directory: ${{ env.TF_DIR }}
