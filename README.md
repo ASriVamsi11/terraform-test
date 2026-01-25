@@ -37,6 +37,10 @@ flowchart TB
 ```
 ---
 
+![AWS Architecture](docs/architecture.png)
+
+---
+
 ## 📁 Folder Structure
 
 ```text
