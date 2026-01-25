@@ -39,7 +39,7 @@ jobs:
                 terraform plan \
                 -var="aws_region=${AWS_REGION}" \
                 -var="project_name=${PROJECT_NAME}" \
-                -var="image_tag=${IMAGE_TAG}"
+                -var="image_tag=${{ github.sha }}"
 
             - name: Terraform Apply
               working-directory: ${{ env.TF_DIR }}
@@ -59,8 +59,8 @@ jobs:
                 ECR_URL: ${{ steps.tfout.output.ECR_URL }}
                 IMAGE_TAG: ${{ github.sha }}
               run: |
-                docker build -t "$ECR_URL:$IMAGE_TAG" ./app
-                docker push "$ECR_URL:$IMAGE_TAG"
+                docker build -t "$ECR_URL:${{github.sha}}" ./app
+                docker push "$ECR_URL:${{github.sha}}"
 
             - name: Terraform apply
               working-directory: ${{ env.TF_DIR }}
