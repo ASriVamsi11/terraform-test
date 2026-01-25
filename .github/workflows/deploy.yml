@@ -58,17 +58,20 @@ jobs:
               run: |
                 set -euo pipefail
 
-                RAW="$(terraform output -raw ecr_repository_url)"
-                ECR_URL="${RAW//$'\r'/}"
-                ECR_URL="${ECR_URL#\[command\]}"
+                TF="${TERRAFORM_CLI_PATH}/terraform-bin"
 
-                if [ -z "$ECR_URL" ]; then
-                  echo "ECR_URL is empty. RAW was: $RAW"
+                RAW="$("$TF" output -raw ecr_repository_url)"
+
+                RAW="${RAW//$'\r'/}"
+                RAW="${RAW%%::debug::*}"
+
+                if [ -z "$RAW" ]; then
+                  echo "ECR_URL is empty"
                   exit 1
                 fi
 
-                echo "ECR_URL=$ECR_URL" >> "$GITHUB_ENV"
-                echo "Resolved ECR_URL=$ECR_URL"
+                echo "ECR_URL=$RAW" >> "$GITHUB_ENV"
+                echo "Resolved ECR_URL=$RAW"
 
             - name: Login to Amazon ECR
               uses: aws-actions/amazon-ecr-login@v2
